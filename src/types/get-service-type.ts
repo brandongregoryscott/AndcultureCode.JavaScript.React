@@ -1,4 +1,5 @@
 import { ServiceResponse } from "andculturecode-javascript-core";
+import { RequestOptions } from "../interfaces/request-options";
 
 /**
  * Type defining the service function for getting the supplied resource type
@@ -8,5 +9,6 @@ import { ServiceResponse } from "andculturecode-javascript-core";
  */
 export type GetService<TRecord, TPathParams, TQueryParams = undefined> = (
     pathParams: TPathParams,
-    queryParams?: TQueryParams
+    queryParams?: TQueryParams,
+    requestOptions?: RequestOptions
 ) => Promise<ServiceResponse<TRecord>>;

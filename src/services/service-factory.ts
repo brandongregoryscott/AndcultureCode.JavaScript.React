@@ -8,6 +8,7 @@ import { NestedCreateService } from "../types/nested-create-service-type";
 import { NestedListService } from "../types/nested-list-service-type";
 import { UpdateService } from "../types/update-service-type";
 import axios from "axios";
+import { RequestOptions } from "../interfaces/request-options";
 
 // ---------------------------------------------------------------------------------------------
 // #region Public Functions
@@ -71,12 +72,17 @@ const ServiceFactory = {
         recordType: { new (): TRecord },
         resourceEndpoint: string
     ): GetService<TRecord, TPathParams, TQueryParams> {
-        return async (pathParams: TPathParams, queryParams?: TQueryParams) =>
+        return async (
+            pathParams: TPathParams,
+            queryParams?: TQueryParams,
+            requestOptions?: RequestOptions
+        ) =>
             await _get<TRecord, TPathParams, TQueryParams>(
                 recordType,
                 resourceEndpoint,
                 pathParams,
-                queryParams
+                queryParams,
+                requestOptions
             );
     },
 
@@ -93,8 +99,17 @@ const ServiceFactory = {
         recordType: { new (): TRecord },
         baseEndpoint: string
     ): ListService<TRecord, TQueryParams> {
-        return async (queryParams?: TQueryParams) =>
-            await _list<TRecord>(recordType, baseEndpoint, null, queryParams);
+        return async (
+            queryParams?: TQueryParams,
+            requestOptions?: RequestOptions
+        ) =>
+            await _list<TRecord>(
+                recordType,
+                baseEndpoint,
+                null,
+                queryParams,
+                requestOptions
+            );
     },
 
     /**
@@ -122,12 +137,17 @@ const ServiceFactory = {
         recordType: { new (): TRecord },
         baseEndpoint: string
     ): NestedListService<TRecord, TPathParams, TQueryParams> {
-        return async (pathParams: TPathParams, queryParams?: TQueryParams) =>
+        return async (
+            pathParams: TPathParams,
+            queryParams?: TQueryParams,
+            requestOptions?: RequestOptions
+        ) =>
             await _list<TRecord>(
                 recordType,
                 baseEndpoint,
                 pathParams,
-                queryParams
+                queryParams,
+                requestOptions
             );
     },
 
@@ -209,7 +229,8 @@ const _get = async function<TRecord, TPathParams, TQueryParams = undefined>(
     recordType: { new (): TRecord },
     resourceEndpoint: string,
     pathParams: TPathParams,
-    queryParams?: TQueryParams
+    queryParams?: TQueryParams,
+    requestOptions?: RequestOptions
 ) {
     const url = RouteUtils.getUrlFromPath(
         resourceEndpoint,
@@ -217,7 +238,7 @@ const _get = async function<TRecord, TPathParams, TQueryParams = undefined>(
         queryParams
     );
     return await axios
-        .get(url)
+        .get(url, requestOptions)
         .then((r) => ServiceUtils.mapAxiosResponse(recordType, r));
 };
 
@@ -225,7 +246,8 @@ const _list = async function<TRecord extends any>(
     recordType: { new (): TRecord },
     baseEndpoint: string,
     pathParams?: any,
-    queryParams?: any
+    queryParams?: any,
+    requestOptions?: RequestOptions
 ) {
     const url = RouteUtils.getUrlFromPath(
         baseEndpoint,
@@ -233,7 +255,7 @@ const _list = async function<TRecord extends any>(
         queryParams
     );
     return await axios
-        .get(url)
+        .get(url, requestOptions)
         .then((r) => ServiceUtils.mapPagedAxiosResponse(recordType, r));
 };
 
